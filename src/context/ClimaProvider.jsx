@@ -10,6 +10,8 @@ const ClimaProvider = ({children}) => {
     })
 
     const [resultado, setResultado] = useState('')
+    const [cargando, setCargando] = useState(false)
+    const [noResultado, setNoResultado] = useState(false)
 
     const datosBusqueda = (e) =>{
         setBusqueda({
@@ -19,9 +21,11 @@ const ClimaProvider = ({children}) => {
     }
 
     const consultarClima = async datos =>{
+        setCargando(true)
+        setNoResultado(false)
         try {
             const {ciudad, pais} = datos    // aca extraigo ciudad y pais, porque deben ir separas la consulta a la API
-
+            
             const appId = import.meta.env.VITE_API_KEY
 
             const url = `http://api.openweathermap.org/geo/1.0/direct?q=${ciudad},${pais}&limit=1&appid=${appId}`
@@ -35,10 +39,15 @@ const ClimaProvider = ({children}) => {
             
             setResultado(clima)
             
+            
 
         } catch (error) {
-            console.log('Error:', error)
+            setNoResultado('No se encontraron resultados')
         }
+        finally{
+            setCargando(false)
+        }
+    
     }
 
     return (
@@ -47,7 +56,9 @@ const ClimaProvider = ({children}) => {
             busqueda,
             datosBusqueda,
             consultarClima,
-            resultado
+            resultado,
+            cargando,
+            noResultado
         }}
     >
         {children}
